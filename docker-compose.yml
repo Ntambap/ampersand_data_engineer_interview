@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  database:
+    image: postgres
+    volumes:
+      - ./people_schema.sql:/docker-entrypoint-initdb.d/people_schema.sql
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 5s
+      timeout: 1s
+      retries: 3
+    ports:
+      - 5432:5432
+
+  app:
+    image: app
+    build: src
+    command: ["./main.py"]
+    volumes:
+      - ./data:/data
